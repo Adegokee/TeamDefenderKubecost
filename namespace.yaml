@@ -1,0 +1,11 @@
+﻿apiVersion: v1
+kind: Namespace
+metadata:
+  name: kubecost
+  labels:
+    name: kubecost
+    app.kubernetes.io/name: kubecost
+    app.kubernetes.io/component: cost-monitoring
+    app.kubernetes.io/part-of: platform-tools
+    app.kubernetes.io/managed-by: kustomize
+    platform.io/project: platform-tools

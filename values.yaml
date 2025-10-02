@@ -1,0 +1,120 @@
+# Kubecost Helm Chart Values - Corrected Structure
+# This values file matches the actual Kubecost cost-analyzer Helm chart
+
+# Global configuration
+global:
+  prometheus:
+    enabled: false
+    fqdn: http://prometheus-server.monitoring.svc.cluster.local:80
+
+# Cost Model (main application)
+costModel:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 300m
+      memory: 512Mi
+
+# Frontend
+frontend:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: kubecost-basic-auth
+    nginx.ingress.kubernetes.io/auth-realm: 'Authentication Required - Kubecost'
+  hosts:
+    - host: kubecost.platform.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: kubecost-tls
+      hosts:
+        - kubecost.platform.local
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 9090
+
+# Prometheus configuration - use existing
+prometheus:
+  server:
+    enabled: false
+  nodeExporter:
+    enabled: false
+  pushgateway:
+    enabled: false
+  alertmanager:
+    enabled: false
+
+# Network policy
+networkPolicy:
+  enabled: true
+
+# RBAC
+rbac:
+  create: true
+
+# Service Account
+serviceAccount:
+  create: true
+  name: kubecost
+
+# Persistent Volume
+persistentVolume:
+  enabled: true
+  size: 10Gi
+  storageClass: ""  # Use default storage class
+  accessModes: ["ReadWriteOnce"]
+
+# Kubecost Product Configuration
+kubecostProductConfigs:
+  clusterName: "production-cluster"
+  currencyCode: "USD"
+  
+# Security contexts
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1001
+  fsGroup: 1001
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1001
+  fsGroup: 1001
+
+# Remove problematic node affinity and tolerations to fix scheduling
+affinity: {}
+nodeSelector: {}
+tolerations: []
+
+# Additional pod labels
+podLabels:
+  app.kubernetes.io/managed-by: argocd
+  app.kubernetes.io/part-of: platform-tools
+  environment: production
+
+# Reporting configuration
+reporting:
+  logCollection: true
+  productAnalytics: false
+  errorReporting: false
+
+# Grafana disabled - use existing
+grafana:
+  enabled: false

@@ -1,0 +1,48 @@
+﻿apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kubecost-cost-analyzer
+  labels:
+    app.kubernetes.io/name: kubecost
+    app.kubernetes.io/component: cost-monitoring
+    app.kubernetes.io/part-of: platform-tools
+rules:
+- apiGroups: [""]
+  resources: ["configmaps", "deployments", "nodes", "pods"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["extensions"]
+  resources: ["deployments"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["apps"]
+  resources: ["deployments", "daemonsets"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["batch"]
+  resources: ["cronjobs", "jobs"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["autoscaling"]
+  resources: ["horizontalpodautoscalers"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["policy"]
+  resources: ["poddisruptionbudgets"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["storage.k8s.io"]
+  resources: ["storageclasses"]
+  verbs: ["get", "list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kubecost-cost-analyzer
+  labels:
+    app.kubernetes.io/name: kubecost
+    app.kubernetes.io/component: cost-monitoring
+    app.kubernetes.io/part-of: platform-tools
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kubecost-cost-analyzer
+subjects:
+- kind: ServiceAccount
+  name: kubecost-cost-analyzer
+  namespace: kubecost

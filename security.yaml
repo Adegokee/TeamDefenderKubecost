@@ -1,0 +1,12 @@
+﻿apiVersion: v1
+kind: Secret
+metadata:
+  name: kubecost-basic-auth
+  namespace: kubecost
+  labels:
+    app.kubernetes.io/name: kubecost
+    app.kubernetes.io/component: cost-monitoring
+    app.kubernetes.io/part-of: platform-tools
+type: Opaque
+data:
+  auth: YWRtaW46JGFwcjEkSDY1dnl0MC4kSWdRNEpOeW1RST4hNENTSnRPRk9GMDE=
