@@ -75,10 +75,10 @@ serviceAccount:
   create: true
   name: kubecost
 
-# Persistent Volume
+# Persistent Volume - KYVERNO COMPLIANT (max 2Gi)
 persistentVolume:
   enabled: true
-  size: 10Gi
+  size: 2Gi  # ⚠️ KYVERNO POLICY LIMIT - DO NOT EXCEED 2Gi
   storageClass: ""  # Use default storage class
   accessModes: ["ReadWriteOnce"]
 

@@ -5,6 +5,7 @@ resources:
   - namespace.yaml
   - rbac.yaml
   - security.yaml
+  - kubecost-helm-app.yaml
 
 
 

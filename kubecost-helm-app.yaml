@@ -1,0 +1,99 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kubecost-cost-analyzer
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: kubecost
+    app.kubernetes.io/component: cost-monitoring
+    app.kubernetes.io/part-of: platform-tools
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: platform-tools
+  source:
+    repoURL: https://kubecost.github.io/cost-analyzer/
+    chart: cost-analyzer
+    targetRevision: "1.103.2"
+    helm:
+      values: |
+        # Ultra-minimal resource configuration
+        costModel:
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "64Mi"
+            limits:
+              cpu: "100m"
+              memory: "128Mi"
+          # Control number of cost-model replicas
+          replicas: 1
+        
+        frontend:
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "64Mi"
+            limits:
+              cpu: "100m"
+              memory: "128Mi"
+          # Control number of frontend replicas
+          replicas: 1
+        
+        # Disable resource-heavy components
+        prometheus:
+          server:
+            enabled: false
+          alertmanager:
+            enabled: false
+        
+        grafana:
+          enabled: false
+        
+        # Basic configuration
+        global:
+          prometheus:
+            enabled: false
+        
+        kubecostModel:
+          # Ultra-minimal resources
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "64Mi"
+            limits:
+              cpu: "100m"
+              memory: "128Mi"
+        
+        # PVC Configuration - Comply with Kyverno policy (max 2Gi)
+        persistentVolume:
+          size: 2Gi
+          storageClass: ""
+          enabled: true
+        
+        # Ensure all storage requests comply with 2Gi limit
+        kubecostModel:
+          persistence:
+            size: 2Gi
+        
+        # Override any default storage settings
+        global:
+          thanos:
+            enabled: false
+        thanos:
+          store:
+            enabled: false
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kubecost
+  
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
