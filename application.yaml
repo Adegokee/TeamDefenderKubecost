@@ -14,7 +14,7 @@ metadata:
 spec:
   project: platform-tools
   source:
-    repoURL: https://kubecost.github.io/cost-analyzer/
+    repoURL: https://github.com/Adegokee/TeamDefenderKubecost.git
     chart: cost-analyzer
     targetRevision: "1.103.2"
     helm:
